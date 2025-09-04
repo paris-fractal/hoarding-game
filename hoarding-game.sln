@@ -1,0 +1,19 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hoarding-game", "hoarding-game.csproj", "{FDC6CFAE-6E40-4635-A5BA-20ED1419DA0C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+	Debug|Any CPU = Debug|Any CPU
+	ExportDebug|Any CPU = ExportDebug|Any CPU
+	ExportRelease|Any CPU = ExportRelease|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FDC6CFAE-6E40-4635-A5BA-20ED1419DA0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDC6CFAE-6E40-4635-A5BA-20ED1419DA0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDC6CFAE-6E40-4635-A5BA-20ED1419DA0C}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{FDC6CFAE-6E40-4635-A5BA-20ED1419DA0C}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{FDC6CFAE-6E40-4635-A5BA-20ED1419DA0C}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{FDC6CFAE-6E40-4635-A5BA-20ED1419DA0C}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+	EndGlobalSection
+EndGlobal
