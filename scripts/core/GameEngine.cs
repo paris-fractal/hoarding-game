@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace hoardinggame.Core
 {
@@ -35,6 +36,9 @@ namespace hoardinggame.Core
                 ProcessInput(newState, input, effects);
             }
 
+            // Process activities
+            ProcessActivities(newState, effects);
+
             return new StepResult
             {
                 NewState = newState,
@@ -60,6 +64,9 @@ namespace hoardinggame.Core
                     break;
                 case BuyUpgradeInput buyUpgrade:
                     HandleBuyUpgrade(state, buyUpgrade, effects);
+                    break;
+                case RotatePlayerInput rotatePlayer:
+                    HandleRotatePlayer(state, rotatePlayer, effects);
                     break;
             }
         }
@@ -130,6 +137,24 @@ namespace hoardinggame.Core
             // TODO: Implement upgrade purchasing logic
         }
 
+        private void HandleRotatePlayer(GameState state, RotatePlayerInput input, List<GameEffect> effects)
+        {
+            // Check if input is currently locked by any activity
+            if (IsInputLocked(state, (float)state.Time))
+                return;
+
+            // Create a rotation activity instead of immediately updating state
+            const float rotationDuration = 0.5f; // Duration for visual rotation
+            float startTime = (float)state.Time;
+            float endTime = startTime + rotationDuration;
+
+            var rotationActivity = new RotatePlayerActivity(startTime, endTime, input.Direction);
+            var lockInputActivity = new LockInputActivity(startTime, endTime);
+            
+            state.Activities.Add(rotationActivity);
+            state.Activities.Add(lockInputActivity);
+        }
+
         private void HandleDoorOccupied(GameState state, DoorApertureOccupiedObservation observation, List<GameEffect> effects)
         {
             // TODO: Update door blocking state
@@ -158,6 +183,27 @@ namespace hoardinggame.Core
         {
             // Gradual sanity decay over time
             state.SanityLevel = Math.Max(0, state.SanityLevel - deltaTime * 0.1f);
+        }
+
+        private void ProcessActivities(GameState state, List<GameEffect> effects)
+        {
+            float currentTime = (float)state.Time;
+            
+            // Process each activity
+            foreach (var activity in state.Activities.ToList())
+            {
+                activity.TryStart(currentTime, state);
+                activity.TryEnd(currentTime, state);
+            }
+            
+            // Remove completed activities
+            state.Activities.RemoveAll(activity => activity.HasEnded);
+        }
+
+        private bool IsInputLocked(GameState state, float currentTime)
+        {
+            return state.Activities.OfType<LockInputActivity>()
+                .Any(lockActivity => lockActivity.IsInputLocked(currentTime));
         }
     }
 }

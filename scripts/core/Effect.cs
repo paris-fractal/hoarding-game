@@ -21,11 +21,6 @@ namespace hoardinggame.Core
         public float Pitch { get; set; } = 1.0f;
     }
 
-    public class LockInputEffect : GameEffect
-    {
-        public float Duration { get; set; }
-    }
-
     public class SpawnLooseEffect : GameEffect
     {
         public string ItemId { get; set; } = string.Empty;

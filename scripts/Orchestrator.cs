@@ -3,16 +3,29 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
+[GlobalClass]
 public partial class Orchestrator : Node
 {
+    public static Orchestrator Instance { get; private set; }
+
+    public override void _Ready()
+    {
+        Instance = this;
+    }
+
     private readonly Queue<GameInput> inbox = new();
     private GameState state = new();
 
     private GameEngine engine = new();
 
-    public void Enqueue(GameInput input)
+    public static void Enqueue(GameInput input)
     {
-        inbox.Enqueue(input);
+        Instance.inbox.Enqueue(input);
+    }
+
+    public static GameState GetCurrentState()
+    {
+        return Instance.state;
     }
 
     public override void _PhysicsProcess(double dt)

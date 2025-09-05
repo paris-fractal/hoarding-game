@@ -35,4 +35,10 @@ namespace hoardinggame.Core
     {
         public string UpgradeId { get; set; } = string.Empty;
     }
+
+    public class RotatePlayerInput : GameInput
+    {
+        public enum RotationDirection { Left, Right }
+        public RotationDirection Direction { get; set; }
+    }
 }
