@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://dcpqg0x75wxd0"]
+[gd_scene load_steps=18 format=3 uid="uid://dcpqg0x75wxd0"]
 
 [ext_resource type="Texture2D" uid="uid://c82bi1l86ocig" path="res://objects/worn_wall/wall-1.png" id="1_k65ib"]
 [ext_resource type="Script" uid="uid://d0otlyqyti2k8" path="res://scripts/Orchestrator.cs" id="1_wscrc"]
@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://bmfsxflrm1kju" path="res://objects/fridge_2/asset_zD3mhxPSLLNtNCogCrZZMTAG.glb" id="9_0vlqb"]
 [ext_resource type="Texture2D" uid="uid://cp7y5xett6n4y" path="res://objects/can/can.png" id="10_gjnwh"]
 [ext_resource type="Script" uid="uid://c6ch7e6dyqr2o" path="res://scripts/CanSprite.cs" id="11_fdqew"]
+[ext_resource type="Script" uid="uid://dt43lqon7h7ae" path="res://scene/SanityMeter.cs" id="13_mswub"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ykrsh"]
 albedo_texture = ExtResource("1_k65ib")
@@ -110,12 +111,19 @@ script = ExtResource("5_v2gmf")
 environment = ExtResource("6_jcbur")
 fov = 60.0
 
-[node name="CanvasLayer" type="CanvasLayer" parent="Player/camera"]
+[node name="UI" type="CanvasLayer" parent="Player/camera"]
 
-[node name="ColorRect" type="ColorRect" parent="Player/camera/CanvasLayer"]
+[node name="ColorRect" type="ColorRect" parent="Player/camera/UI"]
 material = SubResource("ShaderMaterial_xersf")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="SanityMeter" type="ProgressBar" parent="Player/camera/UI"]
+offset_left = 14.0
+offset_top = 16.0
+offset_right = 497.0
+offset_bottom = 64.0
+script = ExtResource("13_mswub")

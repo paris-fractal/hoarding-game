@@ -42,6 +42,9 @@ namespace hoardinggame.Core
             // Process activities
             ProcessActivities(newState, effects);
 
+            // Process sanity decay
+            UpdateSanity(newState, (float)deltaTime, effects);
+
             return new StepResult
             {
                 NewState = newState,
@@ -165,7 +168,7 @@ namespace hoardinggame.Core
         private void UpdateSanity(GameState state, float deltaTime, List<GameEffect> effects)
         {
             // Gradual sanity decay over time
-            state.SanityLevel = Math.Max(0, state.SanityLevel - deltaTime * 0.1f);
+            state.SanityLevel = Math.Max(0, state.SanityLevel - deltaTime * 0.5f);
         }
 
         private void ProcessActivities(GameState state, List<GameEffect> effects)
