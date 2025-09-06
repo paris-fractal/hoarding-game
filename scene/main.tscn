@@ -1,6 +1,7 @@
-[gd_scene load_steps=16 format=3 uid="uid://dcpqg0x75wxd0"]
+[gd_scene load_steps=17 format=3 uid="uid://dcpqg0x75wxd0"]
 
 [ext_resource type="Texture2D" uid="uid://c82bi1l86ocig" path="res://objects/worn_wall/wall-1.png" id="1_k65ib"]
+[ext_resource type="Script" uid="uid://d0otlyqyti2k8" path="res://scripts/Orchestrator.cs" id="1_wscrc"]
 [ext_resource type="Material" uid="uid://d4gq46tdd7l7v" path="res://objects/worn_wall/worn_wall.tres" id="2_wscrc"]
 [ext_resource type="Material" uid="uid://lbiaxmwbqtd" path="res://objects/worn_wall/floor.tres" id="3_mswub"]
 [ext_resource type="Material" uid="uid://bkby4e070he7o" path="res://objects/worn_wall/ceil.tres" id="4_hybxs"]
@@ -43,7 +44,8 @@ shader_parameter/use_lens_distortion = true
 shader_parameter/overlay_color = Color(1, 1, 1, 10)
 shader_parameter/lens_distortion_strength = 0.02
 
-[node name="Node3D" type="Node3D"]
+[node name="Root" type="Node3D"]
+script = ExtResource("1_wscrc")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 3.17325, 0)
@@ -86,24 +88,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.96366, 0)
 size = Vector3(4, 0.1, 4)
 material = ExtResource("4_hybxs")
 
-[node name="player" type="Node3D" parent="room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-script = ExtResource("5_v2gmf")
-
-[node name="camera" type="Camera3D" parent="room/player"]
-environment = ExtResource("6_jcbur")
-fov = 60.0
-
-[node name="CanvasLayer" type="CanvasLayer" parent="room/player/camera"]
-
-[node name="ColorRect" type="ColorRect" parent="room/player/camera/CanvasLayer"]
-material = SubResource("ShaderMaterial_xersf")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
 [node name="fridge" parent="room" instance=ExtResource("8_tv8i1")]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.610713, 0.509018, -1.72091)
 
@@ -117,3 +101,21 @@ pixel_size = 0.0018
 shaded = true
 texture = ExtResource("10_gjnwh")
 script = ExtResource("11_fdqew")
+
+[node name="Player" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("5_v2gmf")
+
+[node name="camera" type="Camera3D" parent="Player"]
+environment = ExtResource("6_jcbur")
+fov = 60.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Player/camera"]
+
+[node name="ColorRect" type="ColorRect" parent="Player/camera/CanvasLayer"]
+material = SubResource("ShaderMaterial_xersf")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

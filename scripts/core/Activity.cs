@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace hoardinggame.Core
@@ -19,32 +20,32 @@ namespace hoardinggame.Core
         {
             if (end <= start)
                 throw new ArgumentException("End time must be after start time");
-                
+
             Start = start;
             End = end;
             HasStarted = false;
             HasEnded = false;
         }
 
-        public void TryStart(float currentTime, GameState state)
+        public void TryStart(float currentTime, GameState state, List<GameEffect> effects)
         {
             if (!HasStarted && currentTime >= Start)
             {
                 HasStarted = true;
-                OnStart(state);
+                OnStart(state, effects);
             }
         }
 
-        public void TryEnd(float currentTime, GameState state)
+        public void TryEnd(float currentTime, GameState state, List<GameEffect> effects)
         {
             if (HasStarted && !HasEnded && currentTime >= End)
             {
                 HasEnded = true;
-                OnEnd(state);
+                OnEnd(state, effects);
             }
         }
 
-        public abstract void OnStart(GameState state);
-        public abstract void OnEnd(GameState state);
+        public abstract void OnStart(GameState state, List<GameEffect> effects);
+        public abstract void OnEnd(GameState state, List<GameEffect> effects);
     }
 }

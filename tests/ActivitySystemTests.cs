@@ -11,7 +11,7 @@ namespace hoardinggame.Core.Tests
         {
             var engine = new GameEngine();
             var state = new GameState();
-            var activity = new TestActivity(1.0f, 2.0f);
+            var activity = new RotatePlayerActivity(1, 2, RotatePlayerInput.RotationDirection.Left);
             state.Activities.Add(activity);
 
             var result = engine.Step(state, new List<GameInput>(), new List<GameObservation>(), 1.0f);
@@ -25,7 +25,7 @@ namespace hoardinggame.Core.Tests
         {
             var engine = new GameEngine();
             var state = new GameState();
-            var activity = new TestActivity(1.0f, 2.0f);
+            var activity = new RotatePlayerActivity(1, 2, RotatePlayerInput.RotationDirection.Left);
             state.Activities.Add(activity);
 
             var result = engine.Step(state, new List<GameInput>(), new List<GameObservation>(), 2.0f);
@@ -40,7 +40,7 @@ namespace hoardinggame.Core.Tests
         {
             var engine = new GameEngine();
             var state = new GameState();
-            var activity = new TestActivity(2.0f, 3.0f);
+            var activity = new RotatePlayerActivity(2, 3, RotatePlayerInput.RotationDirection.Left);
             state.Activities.Add(activity);
 
             var result = engine.Step(state, new List<GameInput>(), new List<GameObservation>(), 1.0f);
@@ -55,8 +55,8 @@ namespace hoardinggame.Core.Tests
         {
             var engine = new GameEngine();
             var state = new GameState();
-            var activity1 = new TestActivity(1.0f, 2.0f);
-            var activity2 = new TestActivity(1.5f, 3.0f);
+            var activity1 = new RotatePlayerActivity(1, 2, RotatePlayerInput.RotationDirection.Left);
+            var activity2 = new RotatePlayerActivity(1.5f, 3, RotatePlayerInput.RotationDirection.Left);
             state.Activities.Add(activity1);
             state.Activities.Add(activity2);
 
@@ -74,7 +74,7 @@ namespace hoardinggame.Core.Tests
         {
             var engine = new GameEngine();
             var initialState = new GameState { PlayerRotation = 0f };
-            
+
             var inputs = new List<GameInput>
             {
                 new RotatePlayerInput { Direction = RotatePlayerInput.RotationDirection.Right }
@@ -107,33 +107,13 @@ namespace hoardinggame.Core.Tests
         public void StateClonePreservesActivities()
         {
             var originalState = new GameState();
-            var activity = new TestActivity(1.0f, 2.0f);
+            var activity = new RotatePlayerActivity(1, 2, RotatePlayerInput.RotationDirection.Left);
             originalState.Activities.Add(activity);
-            
+
             var clonedState = originalState.Clone();
 
             Assert.Single(clonedState.Activities);
             Assert.NotSame(originalState.Activities, clonedState.Activities);
-        }
-    }
-
-    public class TestActivity : Activity
-    {
-        public bool HasStarted { get; private set; }
-        public bool HasEnded { get; private set; }
-
-        public TestActivity(float start, float end) : base(start, end)
-        {
-        }
-
-        public override void OnStart(GameState state)
-        {
-            HasStarted = true;
-        }
-
-        public override void OnEnd(GameState state)
-        {
-            HasEnded = true;
         }
     }
 }

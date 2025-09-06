@@ -19,7 +19,7 @@ namespace hoardinggame.Core.Tests
         {
             var engine = new GameEngine();
             var initialState = new GameState { PlayerRotation = 0f };
-            
+
             var inputs = new List<GameInput>
             {
                 new RotatePlayerInput { Direction = RotatePlayerInput.RotationDirection.Right }
@@ -28,7 +28,11 @@ namespace hoardinggame.Core.Tests
 
             // First step: process input and create activity
             var intermediateResult = engine.Step(initialState, inputs, observations, 0.0);
-            
+            Assert.Single(intermediateResult.Effects);
+            var rotateEffect = Assert.IsType<RotatePlayerEffect>(intermediateResult.Effects[0]);
+            Assert.Equal(270F, rotateEffect.ToRotation);
+            Assert.Equal(0f, intermediateResult.NewState.PlayerRotation);
+
             // Second step: allow activity to complete
             var result = engine.Step(intermediateResult.NewState, new List<GameInput>(), observations, 1.0);
 
@@ -40,7 +44,7 @@ namespace hoardinggame.Core.Tests
         {
             var engine = new GameEngine();
             var initialState = new GameState { PlayerRotation = 0f };
-            
+
             var inputs = new List<GameInput>
             {
                 new RotatePlayerInput { Direction = RotatePlayerInput.RotationDirection.Left }
@@ -49,7 +53,7 @@ namespace hoardinggame.Core.Tests
 
             // First step: process input and create activity
             var intermediateResult = engine.Step(initialState, inputs, observations, 0.0);
-            
+
             // Second step: allow activity to complete
             var result = engine.Step(intermediateResult.NewState, new List<GameInput>(), observations, 1.0);
 
@@ -61,7 +65,7 @@ namespace hoardinggame.Core.Tests
         {
             var engine = new GameEngine();
             var initialState = new GameState { PlayerRotation = 270f };
-            
+
             var inputs = new List<GameInput>
             {
                 new RotatePlayerInput { Direction = RotatePlayerInput.RotationDirection.Left }
@@ -70,7 +74,7 @@ namespace hoardinggame.Core.Tests
 
             // First step: process input and create activity
             var intermediateResult = engine.Step(initialState, inputs, observations, 0.0);
-            
+
             // Second step: allow activity to complete
             var result = engine.Step(intermediateResult.NewState, new List<GameInput>(), observations, 1.0);
 
@@ -82,7 +86,7 @@ namespace hoardinggame.Core.Tests
         {
             var engine = new GameEngine();
             var initialState = new GameState { PlayerRotation = 0f };
-            
+
             var inputs = new List<GameInput>
             {
                 new RotatePlayerInput { Direction = RotatePlayerInput.RotationDirection.Right }
@@ -91,7 +95,7 @@ namespace hoardinggame.Core.Tests
 
             // First step: process input and create activity
             var intermediateResult = engine.Step(initialState, inputs, observations, 0.0);
-            
+
             // Second step: allow activity to complete
             var result = engine.Step(intermediateResult.NewState, new List<GameInput>(), observations, 1.0);
 
@@ -103,7 +107,7 @@ namespace hoardinggame.Core.Tests
         {
             var engine = new GameEngine();
             var initialState = new GameState { PlayerRotation = 0f };
-            
+
             var observations = new List<GameObservation>();
 
             // First rotation input
@@ -111,18 +115,18 @@ namespace hoardinggame.Core.Tests
             {
                 new RotatePlayerInput { Direction = RotatePlayerInput.RotationDirection.Right }
             };
-            
+
             // Process first input and create activity
             var firstResult = engine.Step(initialState, firstInput, observations, 0.0);
-            
+
             // Try second rotation input while first is still active (should be blocked)
             var secondInput = new List<GameInput>
             {
                 new RotatePlayerInput { Direction = RotatePlayerInput.RotationDirection.Right }
             };
-            
+
             var secondResult = engine.Step(firstResult.NewState, secondInput, observations, 0.1);
-            
+
             // Allow first activity to complete
             var finalResult = engine.Step(secondResult.NewState, new List<GameInput>(), observations, 1.0);
 

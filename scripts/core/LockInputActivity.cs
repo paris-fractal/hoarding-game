@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using Godot;
+
 namespace hoardinggame.Core
 {
     public class LockInputActivity : Activity
@@ -7,24 +10,24 @@ namespace hoardinggame.Core
             // Parameterless constructor for JSON serialization
         }
 
-        public LockInputActivity(float start, float end) 
+        public LockInputActivity(float start, float end)
             : base(start, end)
         {
         }
 
-        public override void OnStart(GameState state)
+        public override void OnStart(GameState state, List<GameEffect> effects)
         {
             // Input locking begins - this would be checked by input processing
         }
 
-        public override void OnEnd(GameState state)
+        public override void OnEnd(GameState state, List<GameEffect> effects)
         {
             // Input locking ends - input processing can resume normally
         }
 
-        public bool IsInputLocked(float currentTime)
+        public bool IsInputLocked()
         {
-            return HasStarted && !HasEnded && currentTime >= Start && currentTime < End;
+            return HasStarted && !HasEnded;
         }
     }
 }

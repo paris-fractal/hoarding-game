@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using Godot;
+
 namespace hoardinggame.Core
 {
     public class RotatePlayerActivity : Activity
@@ -9,22 +12,32 @@ namespace hoardinggame.Core
             // Parameterless constructor for JSON serialization
         }
 
-        public RotatePlayerActivity(float start, float end, RotatePlayerInput.RotationDirection direction) 
+        public RotatePlayerActivity(float start, float end, RotatePlayerInput.RotationDirection direction)
             : base(start, end)
         {
             Direction = direction;
         }
 
-        public override void OnStart(GameState state)
+        public override void OnStart(GameState state, List<GameEffect> effects)
         {
-            // Visual rotation animation would be triggered here
-            // This would be handled by the game's visual system
+            // Create visual rotation effect
+            var rotateEffect = new RotatePlayerEffect
+            {
+                FromRotation = state.PlayerRotation,
+                ToRotation = CalculateTargetRotation(state.PlayerRotation),
+                Duration = End - Start,
+                Timestamp = state.Time
+            };
+            effects.Add(rotateEffect);
         }
 
-        public override void OnEnd(GameState state)
+        public override void OnEnd(GameState state, List<GameEffect> effects)
         {
-            // Update the player's rotation in the game state
-            float currentRotation = state.PlayerRotation;
+            state.PlayerRotation = CalculateTargetRotation(state.PlayerRotation);
+        }
+
+        private float CalculateTargetRotation(float currentRotation)
+        {
             float newRotation;
 
             if (Direction == RotatePlayerInput.RotationDirection.Right)
@@ -42,7 +55,7 @@ namespace hoardinggame.Core
             while (newRotation >= 360f)
                 newRotation -= 360f;
 
-            state.PlayerRotation = newRotation;
+            return newRotation;
         }
     }
 }

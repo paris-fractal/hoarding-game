@@ -21,7 +21,6 @@ namespace hoardinggame.Core
             {
                 nameof(RotatePlayerActivity) => JsonSerializer.Deserialize<RotatePlayerActivity>(root.GetRawText(), options),
                 nameof(LockInputActivity) => JsonSerializer.Deserialize<LockInputActivity>(root.GetRawText(), options),
-                "TestActivity" => JsonSerializer.Deserialize<hoardinggame.Core.Tests.TestActivity>(root.GetRawText(), options),
                 _ => throw new JsonException($"Unknown Activity type: {typeName}")
             };
         }
@@ -30,14 +29,14 @@ namespace hoardinggame.Core
         {
             writer.WriteStartObject();
             writer.WriteString("$type", value.GetType().Name);
-            
+
             var jsonString = JsonSerializer.Serialize(value, value.GetType(), options);
             using var jsonDoc = JsonDocument.Parse(jsonString);
             foreach (var property in jsonDoc.RootElement.EnumerateObject())
             {
                 property.WriteTo(writer);
             }
-            
+
             writer.WriteEndObject();
         }
     }

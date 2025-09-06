@@ -3,50 +3,57 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-[GlobalClass]
 public partial class Orchestrator : Node
 {
-    public static Orchestrator Instance { get; private set; }
+	public static Orchestrator Instance { get; private set; }
 
-    public override void _Ready()
-    {
-        Instance = this;
-    }
+	public override void _Ready()
+	{
+		Instance = this;
+	}
 
-    private readonly Queue<GameInput> inbox = new();
-    private GameState state = new();
+	private readonly Queue<GameInput> inbox = new();
+	private GameState state = new();
 
-    private GameEngine engine = new();
+	private GameEngine engine = new();
 
-    public static void Enqueue(GameInput input)
-    {
-        Instance.inbox.Enqueue(input);
-    }
+	public static void Enqueue(GameInput input)
+	{
+		Instance.inbox.Enqueue(input);
+	}
 
-    public static GameState GetCurrentState()
-    {
-        return Instance.state;
-    }
+	public static GameState GetCurrentState()
+	{
+		return Instance.state;
+	}
 
-    public override void _PhysicsProcess(double dt)
-    {
-        // 1) drain + coalesce deterministically
-        var inputs = DrainInbox();
-        // TODO fetch observations from the world
-        var observations = new List<GameObservation>();
+	public static void SetInstance(Orchestrator instance)
+	{
+		Instance = instance;
+	}
 
-        // 2) step core
-        var result = engine.Step(state, inputs, observations, dt);
-        state = result.NewState;
+	public override void _PhysicsProcess(double dt)
+	{
+		// 1) drain + coalesce deterministically
+		var inputs = DrainInbox();
+		// TODO fetch observations from the world
+		var observations = new List<GameObservation>();
 
-        // TODO 3) apply effects
-        // fx.Apply(effects, this);    // spawns, anims, impulses, audio, locks, transitions
-    }
+		// 2) step core
+		var result = engine.Step(state, inputs, observations, dt);
+		state = result.NewState;
 
-    private List<GameInput> DrainInbox()
-    {
-        var list = new List<GameInput>(inbox.Count);
-        while (inbox.Count > 0) list.Add(inbox.Dequeue());
-        return list;
-    }
+		// 3) execute all effects
+		foreach (var effect in result.Effects)
+		{
+			effect.Execute();
+		}
+	}
+
+	private List<GameInput> DrainInbox()
+	{
+		var list = new List<GameInput>(inbox.Count);
+		while (inbox.Count > 0) list.Add(inbox.Dequeue());
+		return list;
+	}
 }

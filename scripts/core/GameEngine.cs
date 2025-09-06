@@ -27,13 +27,16 @@ namespace hoardinggame.Core
             // Process observations
             foreach (var observation in observations)
             {
-                ProcessObservation(newState, observation, effects);
+                ProcessObservation(newState, observation);
             }
 
             // Process inputs
-            foreach (var input in inputs)
+            if (!IsInputLocked(newState))
             {
-                ProcessInput(newState, input, effects);
+                foreach (var input in inputs)
+                {
+                    ProcessInput(newState, input);
+                }
             }
 
             // Process activities
@@ -46,102 +49,82 @@ namespace hoardinggame.Core
             };
         }
 
-        private void ProcessInput(GameState state, GameInput input, List<GameEffect> effects)
+        private void ProcessInput(GameState state, GameInput input)
         {
             switch (input)
             {
                 case OpenDoorInput openDoor:
-                    HandleOpenDoor(state, openDoor, effects);
+                    HandleOpenDoor(state, openDoor);
                     break;
                 case PickItemInput pickItem:
-                    HandlePickItem(state, pickItem, effects);
+                    HandlePickItem(state, pickItem);
                     break;
                 case MovePlayerInput movePlayer:
-                    HandleMovePlayer(state, movePlayer, effects);
+                    HandleMovePlayer(state, movePlayer);
                     break;
                 case SellItemInput sellItem:
-                    HandleSellItem(state, sellItem, effects);
+                    HandleSellItem(state, sellItem);
                     break;
                 case BuyUpgradeInput buyUpgrade:
-                    HandleBuyUpgrade(state, buyUpgrade, effects);
+                    HandleBuyUpgrade(state, buyUpgrade);
                     break;
                 case RotatePlayerInput rotatePlayer:
-                    HandleRotatePlayer(state, rotatePlayer, effects);
+                    HandleRotatePlayer(state, rotatePlayer);
                     break;
             }
         }
 
-        private void ProcessObservation(GameState state, GameObservation observation, List<GameEffect> effects)
+        private void ProcessObservation(GameState state, GameObservation observation)
         {
             switch (observation)
             {
                 case DoorApertureOccupiedObservation doorOccupied:
-                    HandleDoorOccupied(state, doorOccupied, effects);
+                    HandleDoorOccupied(state, doorOccupied);
                     break;
                 case BodyCameToRestObservation bodyRest:
-                    HandleBodyRest(state, bodyRest, effects);
+                    HandleBodyRest(state, bodyRest);
                     break;
                 case PlayerReachedPositionObservation playerReached:
-                    HandlePlayerReached(state, playerReached, effects);
+                    HandlePlayerReached(state, playerReached);
                     break;
                 case ItemPickupCompletedObservation pickupCompleted:
-                    HandlePickupCompleted(state, pickupCompleted, effects);
+                    HandlePickupCompleted(state, pickupCompleted);
                     break;
                 case SanityTriggerObservation sanityTrigger:
-                    HandleSanityTrigger(state, sanityTrigger, effects);
+                    HandleSanityTrigger(state, sanityTrigger);
                     break;
             }
         }
 
-        private void HandleOpenDoor(GameState state, OpenDoorInput input, List<GameEffect> effects)
+        private void HandleOpenDoor(GameState state, OpenDoorInput input)
         {
             // TODO: Implement door opening logic
-            effects.Add(new PlayAnimEffect
-            {
-                NodeId = input.DoorId,
-                AnimationName = "open",
-                Duration = 0.25f,
-                Timestamp = state.Time
-            });
         }
 
-        private void HandlePickItem(GameState state, PickItemInput input, List<GameEffect> effects)
+        private void HandlePickItem(GameState state, PickItemInput input)
         {
             // TODO: Implement item picking logic
-            effects.Add(new SfxEffect
-            {
-                SoundId = "pickup",
-                Volume = 0.7f,
-                Timestamp = state.Time
-            });
         }
 
-        private void HandleMovePlayer(GameState state, MovePlayerInput input, List<GameEffect> effects)
+        private void HandleMovePlayer(GameState state, MovePlayerInput input)
         {
             // TODO: Implement player movement logic
-            effects.Add(new LockInputEffect
-            {
-                Duration = 0.5f,
-                Timestamp = state.Time
-            });
+            // Note: Input locking is now handled by LockInputActivity, not effects
         }
 
-        private void HandleSellItem(GameState state, SellItemInput input, List<GameEffect> effects)
+        private void HandleSellItem(GameState state, SellItemInput input)
         {
             // TODO: Implement item selling logic
             state.Money += 10; // Placeholder
         }
 
-        private void HandleBuyUpgrade(GameState state, BuyUpgradeInput input, List<GameEffect> effects)
+        private void HandleBuyUpgrade(GameState state, BuyUpgradeInput input)
         {
             // TODO: Implement upgrade purchasing logic
         }
 
-        private void HandleRotatePlayer(GameState state, RotatePlayerInput input, List<GameEffect> effects)
+        private void HandleRotatePlayer(GameState state, RotatePlayerInput input)
         {
-            // Check if input is currently locked by any activity
-            if (IsInputLocked(state, (float)state.Time))
-                return;
 
             // Create a rotation activity instead of immediately updating state
             const float rotationDuration = 0.5f; // Duration for visual rotation
@@ -150,31 +133,31 @@ namespace hoardinggame.Core
 
             var rotationActivity = new RotatePlayerActivity(startTime, endTime, input.Direction);
             var lockInputActivity = new LockInputActivity(startTime, endTime);
-            
+
             state.Activities.Add(rotationActivity);
             state.Activities.Add(lockInputActivity);
         }
 
-        private void HandleDoorOccupied(GameState state, DoorApertureOccupiedObservation observation, List<GameEffect> effects)
+        private void HandleDoorOccupied(GameState state, DoorApertureOccupiedObservation observation)
         {
             // TODO: Update door blocking state
         }
 
-        private void HandleBodyRest(GameState state, BodyCameToRestObservation observation, List<GameEffect> effects)
+        private void HandleBodyRest(GameState state, BodyCameToRestObservation observation)
         {
             // TODO: Update physics state tracking
         }
 
-        private void HandlePlayerReached(GameState state, PlayerReachedPositionObservation observation, List<GameEffect> effects)
+        private void HandlePlayerReached(GameState state, PlayerReachedPositionObservation observation)
         {
         }
 
-        private void HandlePickupCompleted(GameState state, ItemPickupCompletedObservation observation, List<GameEffect> effects)
+        private void HandlePickupCompleted(GameState state, ItemPickupCompletedObservation observation)
         {
             // TODO: Update inventory state
         }
 
-        private void HandleSanityTrigger(GameState state, SanityTriggerObservation observation, List<GameEffect> effects)
+        private void HandleSanityTrigger(GameState state, SanityTriggerObservation observation)
         {
             state.SanityLevel = Math.Max(0, state.SanityLevel + observation.SanityDelta);
         }
@@ -188,22 +171,22 @@ namespace hoardinggame.Core
         private void ProcessActivities(GameState state, List<GameEffect> effects)
         {
             float currentTime = (float)state.Time;
-            
+
             // Process each activity
             foreach (var activity in state.Activities.ToList())
             {
-                activity.TryStart(currentTime, state);
-                activity.TryEnd(currentTime, state);
+                activity.TryStart(currentTime, state, effects);
+                activity.TryEnd(currentTime, state, effects);
             }
-            
+
             // Remove completed activities
             state.Activities.RemoveAll(activity => activity.HasEnded);
         }
 
-        private bool IsInputLocked(GameState state, float currentTime)
+        private bool IsInputLocked(GameState state)
         {
             return state.Activities.OfType<LockInputActivity>()
-                .Any(lockActivity => lockActivity.IsInputLocked(currentTime));
+                .Any(lockActivity => lockActivity.IsInputLocked());
         }
     }
 }

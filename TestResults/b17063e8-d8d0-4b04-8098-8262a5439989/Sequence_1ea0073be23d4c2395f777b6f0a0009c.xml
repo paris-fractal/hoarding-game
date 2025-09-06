@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<TestSequence>
+  <Test Name="hoardinggame.Core.Tests.PlayerRotationTests.RotationWrapsAroundCorrectly" DisplayName="hoardinggame.Core.Tests.PlayerRotationTests.RotationWrapsAroundCorrectly" Source="/Users/paris/code/hoarding-game/.godot/mono/temp/bin/Debug/hoarding-game.dll" Completed="False" />
+</TestSequence>
