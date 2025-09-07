@@ -35,20 +35,6 @@ namespace hoardinggame.Core
 		}
 	}
 
-	public class SpawnLooseEffect : GameEffect
-	{
-		public string ItemId { get; set; } = string.Empty;
-		public float PosX { get; set; }
-		public float PosY { get; set; }
-		public float PosZ { get; set; }
-		public bool IsDynamic { get; set; } = true;
-
-		public override void Execute()
-		{
-			// TODO: Implement item spawning
-		}
-	}
-
 	public class DespawnEffect : GameEffect
 	{
 		public string ItemId { get; set; } = string.Empty;

@@ -1,12 +1,13 @@
 using System.Collections.Generic;
-using Xunit;
+using GdUnit4;
 using hoardinggame.Core;
 
 namespace hoardinggame.Core.Tests
 {
+    [TestSuite]
     public class ActivitySystemTests
     {
-        [Fact]
+        [TestCase]
         public void ActivityStartsAtCorrectTime()
         {
             var engine = new GameEngine();
@@ -16,11 +17,11 @@ namespace hoardinggame.Core.Tests
 
             var result = engine.Step(state, new List<GameInput>(), new List<GameObservation>(), 1.0f);
 
-            Assert.True(activity.HasStarted);
-            Assert.False(activity.HasEnded);
+            AssertThat(activity.HasStarted).IsTrue();
+            AssertThat(activity.HasEnded).IsFalse();
         }
 
-        [Fact]
+        [TestCase]
         public void ActivityEndsAtCorrectTime()
         {
             var engine = new GameEngine();
@@ -30,12 +31,12 @@ namespace hoardinggame.Core.Tests
 
             var result = engine.Step(state, new List<GameInput>(), new List<GameObservation>(), 2.0f);
 
-            Assert.True(activity.HasStarted);
-            Assert.True(activity.HasEnded);
-            Assert.Empty(result.NewState.Activities);
+            AssertThat(activity.HasStarted).IsTrue();
+            AssertThat(activity.HasEnded).IsTrue();
+            AssertThat(result.NewState.Activities).IsEmpty();
         }
 
-        [Fact]
+        [TestCase]
         public void ActivityDoesNotStartBeforeStartTime()
         {
             var engine = new GameEngine();
@@ -45,12 +46,12 @@ namespace hoardinggame.Core.Tests
 
             var result = engine.Step(state, new List<GameInput>(), new List<GameObservation>(), 1.0f);
 
-            Assert.False(activity.HasStarted);
-            Assert.False(activity.HasEnded);
-            Assert.Single(result.NewState.Activities);
+            AssertThat(activity.HasStarted).IsFalse();
+            AssertThat(activity.HasEnded).IsFalse();
+            AssertThat(result.NewState.Activities).HasSize(1);
         }
 
-        [Fact]
+        [TestCase]
         public void MultipleActivitiesProcessCorrectly()
         {
             var engine = new GameEngine();
@@ -62,14 +63,14 @@ namespace hoardinggame.Core.Tests
 
             var result = engine.Step(state, new List<GameInput>(), new List<GameObservation>(), 2.5f);
 
-            Assert.True(activity1.HasStarted);
-            Assert.True(activity1.HasEnded);
-            Assert.True(activity2.HasStarted);
-            Assert.False(activity2.HasEnded);
-            Assert.Single(result.NewState.Activities);
+            AssertThat(activity1.HasStarted).IsTrue();
+            AssertThat(activity1.HasEnded).IsTrue();
+            AssertThat(activity2.HasStarted).IsTrue();
+            AssertThat(activity2.HasEnded).IsFalse();
+            AssertThat(result.NewState.Activities).HasSize(1);
         }
 
-        [Fact]
+        [TestCase]
         public void RotatePlayerInputCreatesActivity()
         {
             var engine = new GameEngine();
@@ -83,13 +84,13 @@ namespace hoardinggame.Core.Tests
 
             var result = engine.Step(initialState, inputs, observations, 1.0f);
 
-            Assert.Equal(2, result.NewState.Activities.Count); // RotatePlayerActivity + LockInputActivity
-            Assert.Contains(result.NewState.Activities, a => a is RotatePlayerActivity);
-            Assert.Contains(result.NewState.Activities, a => a is LockInputActivity);
-            Assert.Equal(0f, result.NewState.PlayerRotation); // Should not change until activity ends
+            AssertThat(result.NewState.Activities).HasSize(2); // RotatePlayerActivity + LockInputActivity
+            AssertThat(result.NewState.Activities).Contains(a => a is RotatePlayerActivity);
+            AssertThat(result.NewState.Activities).Contains(a => a is LockInputActivity);
+            AssertThat(result.NewState.PlayerRotation).IsEqual(0f); // Should not change until activity ends
         }
 
-        [Fact]
+        [TestCase]
         public void RotatePlayerActivityUpdatesStateWhenComplete()
         {
             var engine = new GameEngine();
@@ -99,11 +100,11 @@ namespace hoardinggame.Core.Tests
 
             var result = engine.Step(state, new List<GameInput>(), new List<GameObservation>(), 2.0f);
 
-            Assert.Equal(270f, result.NewState.PlayerRotation);
-            Assert.Empty(result.NewState.Activities);
+            AssertThat(result.NewState.PlayerRotation).IsEqual(270f);
+            AssertThat(result.NewState.Activities).IsEmpty();
         }
 
-        [Fact]
+        [TestCase]
         public void StateClonePreservesActivities()
         {
             var originalState = new GameState();
@@ -112,8 +113,8 @@ namespace hoardinggame.Core.Tests
 
             var clonedState = originalState.Clone();
 
-            Assert.Single(clonedState.Activities);
-            Assert.NotSame(originalState.Activities, clonedState.Activities);
+            AssertThat(clonedState.Activities).HasSize(1);
+            AssertThat(clonedState.Activities).IsNotSame(originalState.Activities);
         }
     }
 }

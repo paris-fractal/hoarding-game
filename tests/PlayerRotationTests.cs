@@ -1,17 +1,18 @@
 using System;
 using System.Collections.Generic;
-using Xunit;
+using GdUnit4;
 using hoardinggame.Core;
 
 namespace hoardinggame.Core.Tests
 {
+    [TestSuite]
     public class PlayerRotationTests
     {
         [Fact]
         public void InitialPlayerRotationIsZero()
         {
             var state = new GameState();
-            Assert.Equal(0f, state.PlayerRotation);
+            AssertThat(state.PlayerRotation).IsEqual(0f);
         }
 
         [Fact]
@@ -28,15 +29,16 @@ namespace hoardinggame.Core.Tests
 
             // First step: process input and create activity
             var intermediateResult = engine.Step(initialState, inputs, observations, 0.0);
-            Assert.Single(intermediateResult.Effects);
-            var rotateEffect = Assert.IsType<RotatePlayerEffect>(intermediateResult.Effects[0]);
-            Assert.Equal(270F, rotateEffect.ToRotation);
-            Assert.Equal(0f, intermediateResult.NewState.PlayerRotation);
+            AssertThat(intermediateResult.Effects).HasSize(1);
+            AssertThat(intermediateResult.Effects[0]).IsInstanceOf<RotatePlayerEffect>();
+            var rotateEffect = (RotatePlayerEffect)intermediateResult.Effects[0];
+            AssertThat(rotateEffect.ToRotation).IsEqual(270F);
+            AssertThat(intermediateResult.NewState.PlayerRotation).IsEqual(0f);
 
             // Second step: allow activity to complete
             var result = engine.Step(intermediateResult.NewState, new List<GameInput>(), observations, 1.0);
 
-            Assert.Equal(270f, result.NewState.PlayerRotation);
+            AssertThat(result.NewState.PlayerRotation).IsEqual(270f);
         }
 
         [Fact]
@@ -57,7 +59,7 @@ namespace hoardinggame.Core.Tests
             // Second step: allow activity to complete
             var result = engine.Step(intermediateResult.NewState, new List<GameInput>(), observations, 1.0);
 
-            Assert.Equal(90f, result.NewState.PlayerRotation);
+            AssertThat(result.NewState.PlayerRotation).IsEqual(90f);
         }
 
         [Fact]
@@ -78,7 +80,7 @@ namespace hoardinggame.Core.Tests
             // Second step: allow activity to complete
             var result = engine.Step(intermediateResult.NewState, new List<GameInput>(), observations, 1.0);
 
-            Assert.Equal(0f, result.NewState.PlayerRotation);
+            AssertThat(result.NewState.PlayerRotation).IsEqual(0f);
         }
 
         [Fact]
@@ -99,7 +101,7 @@ namespace hoardinggame.Core.Tests
             // Second step: allow activity to complete
             var result = engine.Step(intermediateResult.NewState, new List<GameInput>(), observations, 1.0);
 
-            Assert.Equal(270f, result.NewState.PlayerRotation);
+            AssertThat(result.NewState.PlayerRotation).IsEqual(270f);
         }
 
         [Fact]
@@ -131,7 +133,7 @@ namespace hoardinggame.Core.Tests
             var finalResult = engine.Step(secondResult.NewState, new List<GameInput>(), observations, 1.0);
 
             // Only first rotation should be processed due to input locking
-            Assert.Equal(270f, finalResult.NewState.PlayerRotation);
+            AssertThat(finalResult.NewState.PlayerRotation).IsEqual(270f);
         }
 
         [Fact]
@@ -140,8 +142,8 @@ namespace hoardinggame.Core.Tests
             var originalState = new GameState { PlayerRotation = 180f };
             var clonedState = originalState.Clone();
 
-            Assert.Equal(180f, clonedState.PlayerRotation);
-            Assert.NotSame(originalState, clonedState);
+            AssertThat(clonedState.PlayerRotation).IsEqual(180f);
+            AssertThat(clonedState).IsNotSame(originalState);
         }
 
         [Fact]
@@ -151,7 +153,7 @@ namespace hoardinggame.Core.Tests
             var json = originalState.ToJson();
             var deserializedState = GameState.FromJson(json);
 
-            Assert.Equal(270f, deserializedState.PlayerRotation);
+            AssertThat(deserializedState.PlayerRotation).IsEqual(270f);
         }
     }
 }

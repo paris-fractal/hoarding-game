@@ -8,11 +8,11 @@
 [ext_resource type="Script" uid="uid://dckyavuef78ev" path="res://scripts/Player.cs" id="5_v2gmf"]
 [ext_resource type="Environment" uid="uid://3k03y7qoxisk" path="res://shaders/main_env.tres" id="6_jcbur"]
 [ext_resource type="Shader" uid="uid://bi4g70tnjnqo1" path="res://shaders/pixelate.gdshader" id="7_smf0o"]
+[ext_resource type="PackedScene" uid="uid://dyxcd0cm2trxi" path="res://objects/junk/junk_can.tscn" id="8_hybxs"]
 [ext_resource type="PackedScene" uid="uid://cl6wbxrxxv5xv" path="res://objects/fridge_1/fridge.glb" id="8_tv8i1"]
 [ext_resource type="PackedScene" uid="uid://bmfsxflrm1kju" path="res://objects/fridge_2/asset_zD3mhxPSLLNtNCogCrZZMTAG.glb" id="9_0vlqb"]
-[ext_resource type="Texture2D" uid="uid://cp7y5xett6n4y" path="res://objects/can/can.png" id="10_gjnwh"]
-[ext_resource type="Script" uid="uid://c6ch7e6dyqr2o" path="res://scripts/CanSprite.cs" id="11_fdqew"]
 [ext_resource type="Script" uid="uid://dt43lqon7h7ae" path="res://scene/SanityMeter.cs" id="13_mswub"]
+[ext_resource type="Script" uid="uid://d0updcarmx71o" path="res://scripts/JunkSystem.cs" id="14_hybxs"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ykrsh"]
 albedo_texture = ExtResource("1_k65ib")
@@ -95,13 +95,8 @@ transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.610713, 0.509018, -1
 [node name="fridge_2" parent="room" instance=ExtResource("9_0vlqb")]
 transform = Transform3D(-2.18557e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.18557e-08, -1.76169, 0.558314, -0.726191)
 
-[node name="can_sprite" type="Sprite3D" parent="room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.476451, 1.05448, -1.60722)
-gi_mode = 2
-pixel_size = 0.0018
-shaded = true
-texture = ExtResource("10_gjnwh")
-script = ExtResource("11_fdqew")
+[node name="junk_can" parent="room" instance=ExtResource("8_hybxs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.476, 1.054, -1.607)
 
 [node name="Player" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -127,3 +122,8 @@ offset_top = 16.0
 offset_right = 497.0
 offset_bottom = 64.0
 script = ExtResource("13_mswub")
+
+[node name="Global" type="Node3D" parent="."]
+
+[node name="JunkSystem" type="Node3D" parent="Global"]
+script = ExtResource("14_hybxs")
