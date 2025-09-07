@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GdUnit4;
+using static GdUnit4.Assertions;
 using hoardinggame.Core;
 
 namespace hoardinggame.Core.Tests
@@ -28,7 +29,7 @@ namespace hoardinggame.Core.Tests
             var result = engine.Step(initialState, inputs, observations, 1.0);
 
             // Should decay by 0.5 per second, so 100 - 0.5 = 99.5
-            AssertThat(result.NewState.SanityLevel).IsEqualApproximately(99.5f, 0.1f);
+            AssertThat(result.NewState.SanityLevel).IsEqualApprox(99.5f, 0.1f);
         }
 
         [TestCase]
@@ -44,7 +45,7 @@ namespace hoardinggame.Core.Tests
             var result = engine.Step(initialState, inputs, observations, 10.0);
 
             // Should decay by 5.0 over 10 seconds (0.5 per second)
-            AssertThat(result.NewState.SanityLevel).IsEqualApproximately(95.0f, 0.1f);
+            AssertThat(result.NewState.SanityLevel).IsEqualApprox(95.0f, 0.1f);
         }
 
         [TestCase]
@@ -80,7 +81,7 @@ namespace hoardinggame.Core.Tests
             }
 
             // Should decay by approximately 0.5 over 1 total second
-            AssertThat(state.SanityLevel).IsEqualApproximately(99.5f, 0.01f);
+            AssertThat(state.SanityLevel).IsEqualApprox(99.5f, 0.01f);
         }
 
         [TestCase]
@@ -137,7 +138,7 @@ namespace hoardinggame.Core.Tests
             var result = engine.Step(initialState, inputs, observations, 1.0);
 
             // Should be: 50 (initial) - 5 (trigger) - 0.5 (1 second decay) = 44.5
-            AssertThat(result.NewState.SanityLevel).IsEqualApproximately(44.5f, 0.1f);
+            AssertThat(result.NewState.SanityLevel).IsEqualApprox(44.5f, 0.1f);
         }
     }
 }

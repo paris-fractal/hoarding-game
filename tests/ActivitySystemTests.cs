@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using GdUnit4;
+using static GdUnit4.Assertions;
 using hoardinggame.Core;
 
 namespace hoardinggame.Core.Tests
@@ -85,8 +87,8 @@ namespace hoardinggame.Core.Tests
             var result = engine.Step(initialState, inputs, observations, 1.0f);
 
             AssertThat(result.NewState.Activities).HasSize(2); // RotatePlayerActivity + LockInputActivity
-            AssertThat(result.NewState.Activities).Contains(a => a is RotatePlayerActivity);
-            AssertThat(result.NewState.Activities).Contains(a => a is LockInputActivity);
+            AssertThat(result.NewState.Activities.Any(a => a is RotatePlayerActivity)).IsTrue();
+            AssertThat(result.NewState.Activities.Any(a => a is LockInputActivity)).IsTrue();
             AssertThat(result.NewState.PlayerRotation).IsEqual(0f); // Should not change until activity ends
         }
 

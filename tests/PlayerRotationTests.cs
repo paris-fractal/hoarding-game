@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GdUnit4;
+using static GdUnit4.Assertions;
 using hoardinggame.Core;
 
 namespace hoardinggame.Core.Tests
@@ -8,14 +9,14 @@ namespace hoardinggame.Core.Tests
     [TestSuite]
     public class PlayerRotationTests
     {
-        [Fact]
+        [TestCase]
         public void InitialPlayerRotationIsZero()
         {
             var state = new GameState();
             AssertThat(state.PlayerRotation).IsEqual(0f);
         }
 
-        [Fact]
+        [TestCase]
         public void TurnRightRotatesPlayerNegative90Degrees()
         {
             var engine = new GameEngine();
@@ -41,7 +42,7 @@ namespace hoardinggame.Core.Tests
             AssertThat(result.NewState.PlayerRotation).IsEqual(270f);
         }
 
-        [Fact]
+        [TestCase]
         public void TurnLeftRotatesPlayerPositive90Degrees()
         {
             var engine = new GameEngine();
@@ -62,7 +63,7 @@ namespace hoardinggame.Core.Tests
             AssertThat(result.NewState.PlayerRotation).IsEqual(90f);
         }
 
-        [Fact]
+        [TestCase]
         public void RotationWrapsAroundCorrectly()
         {
             var engine = new GameEngine();
@@ -83,7 +84,7 @@ namespace hoardinggame.Core.Tests
             AssertThat(result.NewState.PlayerRotation).IsEqual(0f);
         }
 
-        [Fact]
+        [TestCase]
         public void RotationWrapsAroundNegativeCorrectly()
         {
             var engine = new GameEngine();
@@ -104,7 +105,7 @@ namespace hoardinggame.Core.Tests
             AssertThat(result.NewState.PlayerRotation).IsEqual(270f);
         }
 
-        [Fact]
+        [TestCase]
         public void MultipleRotationsNowProcessSequentially()
         {
             var engine = new GameEngine();
@@ -136,7 +137,7 @@ namespace hoardinggame.Core.Tests
             AssertThat(finalResult.NewState.PlayerRotation).IsEqual(270f);
         }
 
-        [Fact]
+        [TestCase]
         public void StateClonePreservesRotation()
         {
             var originalState = new GameState { PlayerRotation = 180f };
@@ -146,7 +147,7 @@ namespace hoardinggame.Core.Tests
             AssertThat(clonedState).IsNotSame(originalState);
         }
 
-        [Fact]
+        [TestCase]
         public void StateJsonSerializationPreservesRotation()
         {
             var originalState = new GameState { PlayerRotation = 270f };

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GdUnit4;
+using static GdUnit4.Assertions;
 using hoardinggame.Core;
 
 namespace hoardinggame.Core.Tests
