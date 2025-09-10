@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://dcpqg0x75wxd0"]
+[gd_scene load_steps=19 format=3 uid="uid://dcpqg0x75wxd0"]
 
 [ext_resource type="Texture2D" uid="uid://c82bi1l86ocig" path="res://objects/worn_wall/wall-1.png" id="1_k65ib"]
 [ext_resource type="Script" uid="uid://d0otlyqyti2k8" path="res://scripts/Orchestrator.cs" id="1_wscrc"]
@@ -30,6 +30,9 @@ texture_filter = 0
 albedo_texture = ExtResource("1_k65ib")
 uv1_scale = Vector3(0.25, -1, 1)
 texture_filter = 0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mswub"]
+size = Vector3(0.54, 0.99, 0.46)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xersf"]
 shader = ExtResource("7_smf0o")
@@ -81,6 +84,7 @@ material = SubResource("StandardMaterial3D_vbegm")
 
 [node name="floor" type="CSGBox3D" parent="room"]
 transform = Transform3D(1, 0.000443777, -0.000659616, -0.000439158, 0.999975, 0.00702377, 0.000662701, -0.00702347, 0.999975, 0, 0, 0)
+use_collision = true
 size = Vector3(4, 0.1, 4)
 material = ExtResource("3_mswub")
 
@@ -89,14 +93,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.96366, 0)
 size = Vector3(4, 0.1, 4)
 material = ExtResource("4_hybxs")
 
-[node name="fridge" parent="room" instance=ExtResource("8_tv8i1")]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.610713, 0.509018, -1.72091)
-
 [node name="fridge_2" parent="room" instance=ExtResource("9_0vlqb")]
 transform = Transform3D(-2.18557e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.18557e-08, -1.76169, 0.558314, -0.726191)
 
 [node name="junk_can" parent="room" instance=ExtResource("8_hybxs")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.476, 1.054, -1.607)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.476, 1.074, -1.607)
+visible = false
+
+[node name="fridge" type="RigidBody3D" parent="room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.611, 0.509, -1.721)
+
+[node name="fridge_mesh" parent="room/fridge" instance=ExtResource("8_tv8i1")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="room/fridge"]
+shape = SubResource("BoxShape3D_mswub")
 
 [node name="Player" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

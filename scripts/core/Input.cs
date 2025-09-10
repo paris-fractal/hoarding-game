@@ -41,4 +41,6 @@ namespace hoardinggame.Core
         public enum RotationDirection { Left, Right }
         public RotationDirection Direction { get; set; }
     }
+
+    public class SpawnJunkInput : GameInput { }
 }

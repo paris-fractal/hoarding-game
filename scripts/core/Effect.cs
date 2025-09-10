@@ -90,16 +90,13 @@ namespace hoardinggame.Core
 
 		public override void Execute()
 		{
-			GD.Print("rotating to " + ToRotation);
 			var player = Orchestrator.Instance.GetNode<Node3D>("Player");
 			if (FromRotation == 270 && ToRotation == 0)
 			{
-				GD.Print("resetting rotation to -90");
 				player.RotationDegrees = player.RotationDegrees with { Y = -90 };
 			}
 			if (FromRotation == 0 && ToRotation == 270)
 			{
-				GD.Print("resetting rotation to 360");
 				player.RotationDegrees = player.RotationDegrees with { Y = 360 };
 
 			}

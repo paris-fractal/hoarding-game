@@ -7,8 +7,12 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_v2gmf"]
 size = Vector3(0.06, 0.11, 0.02)
 
-[node name="junk_can" type="Node3D"]
+[node name="junk_can" type="RigidBody3D"]
+collision_layer = 3
 script = ExtResource("1_7afon")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_v2gmf")
 
 [node name="can_sprite" type="Sprite3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000450999, 0.000479937, -0.00022006)
@@ -17,9 +21,3 @@ pixel_size = 0.0018
 shaded = true
 texture = ExtResource("1_f5nqv")
 script = ExtResource("2_7afon")
-
-[node name="RigidBody3D" type="RigidBody3D" parent="."]
-collision_layer = 3
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
-shape = SubResource("BoxShape3D_v2gmf")

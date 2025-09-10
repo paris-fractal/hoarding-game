@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace hoardinggame.Core
 {
-    public record Junk(string Id, string type, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ);
+    public record JunkItem(string Id, string type, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ);
 
     [Serializable]
     public class GameState
@@ -18,7 +18,7 @@ namespace hoardinggame.Core
         public int Money { get; set; } = 0;
         public Dictionary<string, object> Inventory { get; set; } = new();
         public List<Activity> Activities { get; set; } = new();
-        public List<Junk> JunkItems { get; set; } = new();
+        public List<JunkItem> JunkItems { get; set; } = new();
 
         public string ToJson()
         {

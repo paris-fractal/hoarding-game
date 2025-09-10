@@ -74,7 +74,15 @@ namespace hoardinggame.Core
                 case RotatePlayerInput rotatePlayer:
                     HandleRotatePlayer(state, rotatePlayer);
                     break;
+                case SpawnJunkInput spawnJunk:
+                    HandleSpawnJunk(state);
+                    break;
             }
+        }
+
+        private void HandleSpawnJunk(GameState state)
+        {
+            state.JunkItems.Add(new JunkItem(Guid.NewGuid().ToString(), "junk_can", -.476f, 1.054f, -1.607f, 0, 0, 0));
         }
 
         private void ProcessObservation(GameState state, GameObservation observation)
