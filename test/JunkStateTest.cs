@@ -162,5 +162,29 @@ namespace hoardinggame.Core.Tests
             AssertThat(modifiedJunk.PosX).IsEqual(10f);
             AssertThat(junk.PosX).IsEqual(1f); // Original unchanged
         }
+
+        [TestCase]
+        public void SpawnJunkInputPlacesItemAtRequestedPosition()
+        {
+            var engine = new GameEngine();
+            var initialState = new GameState();
+            var inputs = new List<GameInput>
+            {
+                new SpawnJunkInput
+                {
+                    PosX = 1.25f,
+                    PosY = 0.5f,
+                    PosZ = -0.75f
+                }
+            };
+
+            var result = engine.Step(initialState, inputs, new List<GameObservation>(), 0.016);
+
+            AssertThat(result.NewState.JunkItems).HasSize(1);
+            var junk = result.NewState.JunkItems.First();
+            AssertThat(junk.PosX).IsEqual(1.25f);
+            AssertThat(junk.PosY).IsEqual(0.5f);
+            AssertThat(junk.PosZ).IsEqual(-0.75f);
+        }
     }
 }

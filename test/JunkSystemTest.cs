@@ -8,21 +8,25 @@ using Godot;
 
 namespace hoardinggame.Core.Tests
 {
-    [RequireGodotRuntime]
-    [TestSuite]
-    public class JunkRealizationSystemTests
-    {
-        private ISceneRunner sceneRunner;
-        private JunkSystem junkSystem;
-
-        [Before]
-        public void SetUp()
+        [RequireGodotRuntime]
+        [TestSuite]
+        public class JunkRealizationSystemTests
         {
-            sceneRunner = ISceneRunner.Load("res://scene/main.tscn");
+            private ISceneRunner sceneRunner;
+            private JunkSystem junkSystem;
+            private Node3D room;
+            private Node3D junkPlane;
 
-            // Get the JunkSystem from the scene
-            junkSystem = sceneRunner.Scene().GetNode<JunkSystem>("Global/JunkSystem");
-        }
+            [Before]
+            public void SetUp()
+            {
+                sceneRunner = ISceneRunner.Load("res://scene/main.tscn");
+
+                // Get the JunkSystem from the scene
+                junkSystem = sceneRunner.Scene().GetNode<JunkSystem>("Global/JunkSystem");
+                room = sceneRunner.Scene().GetNode<Node3D>("/root/Root/room");
+                junkPlane = room.GetNode<Node3D>("JunkPlane");
+            }
 
         [After]
         public void TearDown()
@@ -59,8 +63,8 @@ namespace hoardinggame.Core.Tests
         [TestCase]
         public void RoomNode_Exists()
         {
-            var room = sceneRunner.Scene().GetNode<Node3D>("room");
             AssertThat(room).IsNotNull();
+            AssertThat(junkPlane).IsNotNull();
 
             // Check that room has some children (static junk_can)
             var children = room.GetChildren();
@@ -71,13 +75,11 @@ namespace hoardinggame.Core.Tests
         public void JunkSystem_CreatesJunkObjectWhenAddedToGameState()
         {
             // Arrange - Get the orchestrator and room
-            var orchestrator = sceneRunner.Scene().GetNode<Orchestrator>("Global/Orchestrator");
-            var room = sceneRunner.Scene().GetNode<Node3D>("room");
-            var initialChildCount = room.GetChildren().Count;
+            var initialChildCount = junkPlane.GetChildren().Count;
 
             // Create a junk item in the GameState
             var gameState = Orchestrator.GetCurrentState();
-            gameState.JunkItems.Add(new hoardinggame.Core.JunkItem(
+            gameState.JunkItems.Add(new JunkItem(
                 Id: "test-junk-1",
                 type: "junk_can",
                 PosX: 1.0f,
@@ -92,28 +94,25 @@ namespace hoardinggame.Core.Tests
             sceneRunner.SimulateFrames(2);
 
             // Assert - Check that a new object was added to the room
-            var newChildCount = room.GetChildren().Count;
+            var newChildCount = junkPlane.GetChildren().Count;
             AssertThat(newChildCount).IsEqual(initialChildCount + 1);
 
             // Find the newly created junk object by searching through all children
             Junk newJunkComponent = null;
             Node3D newJunkObject = null;
-            foreach (Node child in room.GetChildren())
+            foreach (Node child in junkPlane.GetChildren())
             {
-                if (child is Node3D node3D)
+                if (child is Junk junkComponent && junkComponent.GameStateId == "test-junk-1")
                 {
-                    var junkComponent = node3D.GetNodeOrNull<Junk>(".");
-                    if (junkComponent != null && junkComponent.GameStateId == "test-junk-1")
-                    {
-                        newJunkComponent = junkComponent;
-                        newJunkObject = node3D;
-                        break;
-                    }
+                    newJunkComponent = junkComponent;
+                    newJunkObject = child as Node3D;
+                    break;
                 }
             }
 
             AssertThat(newJunkComponent).IsNotNull();
             AssertThat(newJunkObject).IsNotNull();
+            AssertThat(newJunkObject.GetParent().Name).IsEqual("JunkPlane");
 
             // Verify position and rotation
             AssertThat(newJunkObject.Position.X).IsEqualApprox(1.0f, 0.01f);
@@ -141,23 +140,18 @@ namespace hoardinggame.Core.Tests
             // Process frames to realize the junk
             sceneRunner.SimulateFrames(2);
 
-            var room = sceneRunner.Scene().GetNode<Node3D>("room");
-            var initialChildCount = room.GetChildren().Count;
+            var initialChildCount = junkPlane.GetChildren().Count;
 
             // Verify the object was created
             Junk testJunkComponent = null;
             Node3D testJunkObject = null;
-            foreach (Node child in room.GetChildren())
+            foreach (Node child in junkPlane.GetChildren())
             {
-                if (child is Node3D node3D)
+                if (child is Junk junkComponent && junkComponent.GameStateId == "test-junk-remove")
                 {
-                    var junkComponent = node3D.GetNodeOrNull<Junk>(".");
-                    if (junkComponent != null && junkComponent.GameStateId == "test-junk-remove")
-                    {
-                        testJunkComponent = junkComponent;
-                        testJunkObject = node3D;
-                        break;
-                    }
+                    testJunkComponent = junkComponent;
+                    testJunkObject = child as Node3D;
+                    break;
                 }
             }
             AssertThat(testJunkComponent).IsNotNull();
@@ -170,21 +164,17 @@ namespace hoardinggame.Core.Tests
             sceneRunner.SimulateFrames(2);
 
             // Assert - Check that the object was removed
-            var newChildCount = room.GetChildren().Count;
+            var newChildCount = junkPlane.GetChildren().Count;
             AssertThat(newChildCount).IsEqual(initialChildCount - 1);
 
             // Verify the specific object is gone
             Junk removedJunkComponent = null;
-            foreach (Node child in room.GetChildren())
+            foreach (Node child in junkPlane.GetChildren())
             {
-                if (child is Node3D node3D)
+                if (child is Junk junkComponent && junkComponent.GameStateId == "test-junk-remove")
                 {
-                    var junkComponent = node3D.GetNodeOrNull<Junk>(".");
-                    if (junkComponent != null && junkComponent.GameStateId == "test-junk-remove")
-                    {
-                        removedJunkComponent = junkComponent;
-                        break;
-                    }
+                    removedJunkComponent = junkComponent;
+                    break;
                 }
             }
             AssertThat(removedJunkComponent).IsNull();
@@ -223,30 +213,24 @@ namespace hoardinggame.Core.Tests
             sceneRunner.SimulateFrames(2);
 
             // Assert - Both objects should exist
-            var room = sceneRunner.Scene().GetNode<Node3D>("room");
-
             Junk junk1Component = null;
             Junk junk2Component = null;
             Node3D junk1 = null;
             Node3D junk2 = null;
 
-            foreach (Node child in room.GetChildren())
+            foreach (Node child in junkPlane.GetChildren())
             {
-                if (child is Node3D node3D)
+                if (child is Junk junkComponent)
                 {
-                    var junkComponent = node3D.GetNodeOrNull<Junk>(".");
-                    if (junkComponent != null)
+                    if (junkComponent.GameStateId == "multi-junk-1")
                     {
-                        if (junkComponent.GameStateId == "multi-junk-1")
-                        {
-                            junk1Component = junkComponent;
-                            junk1 = node3D;
-                        }
-                        else if (junkComponent.GameStateId == "multi-junk-2")
-                        {
-                            junk2Component = junkComponent;
-                            junk2 = node3D;
-                        }
+                        junk1Component = junkComponent;
+                        junk1 = child as Node3D;
+                    }
+                    else if (junkComponent.GameStateId == "multi-junk-2")
+                    {
+                        junk2Component = junkComponent;
+                        junk2 = child as Node3D;
                     }
                 }
             }
@@ -269,21 +253,17 @@ namespace hoardinggame.Core.Tests
             Junk remainingJunk1Component = null;
             Junk remainingJunk2Component = null;
 
-            foreach (Node child in room.GetChildren())
+            foreach (Node child in junkPlane.GetChildren())
             {
-                if (child is Node3D node3D)
+                if (child is Junk junkComponent)
                 {
-                    var junkComponent = node3D.GetNodeOrNull<Junk>(".");
-                    if (junkComponent != null)
+                    if (junkComponent.GameStateId == "multi-junk-1")
                     {
-                        if (junkComponent.GameStateId == "multi-junk-1")
-                        {
-                            remainingJunk1Component = junkComponent;
-                        }
-                        else if (junkComponent.GameStateId == "multi-junk-2")
-                        {
-                            remainingJunk2Component = junkComponent;
-                        }
+                        remainingJunk1Component = junkComponent;
+                    }
+                    else if (junkComponent.GameStateId == "multi-junk-2")
+                    {
+                        remainingJunk2Component = junkComponent;
                     }
                 }
             }
@@ -297,8 +277,7 @@ namespace hoardinggame.Core.Tests
         {
             // Arrange
             var gameState = Orchestrator.GetCurrentState();
-            var room = sceneRunner.Scene().GetNode<Node3D>("room");
-            var initialChildCount = room.GetChildren().Count;
+            var initialChildCount = junkPlane.GetChildren().Count;
 
             gameState.JunkItems.Add(new hoardinggame.Core.JunkItem(
                 Id: "unknown-junk",
@@ -315,7 +294,7 @@ namespace hoardinggame.Core.Tests
             sceneRunner.SimulateFrames(2);
 
             // Assert - No new object should be created for unknown type
-            var newChildCount = room.GetChildren().Count;
+            var newChildCount = junkPlane.GetChildren().Count;
             AssertThat(newChildCount).IsEqual(initialChildCount);
         }
 
@@ -340,21 +319,15 @@ namespace hoardinggame.Core.Tests
             sceneRunner.SimulateFrames(2);
 
             // Verify initial position
-            var room = sceneRunner.Scene().GetNode<Node3D>("room");
-
             Junk junkComponent = null;
             Node3D junkObject = null;
-            foreach (Node child in room.GetChildren())
+            foreach (Node child in junkPlane.GetChildren())
             {
-                if (child is Node3D node3D)
+                if (child is Junk component && component.GameStateId == "position-test-junk")
                 {
-                    var component = node3D.GetNodeOrNull<Junk>(".");
-                    if (component != null && component.GameStateId == "position-test-junk")
-                    {
-                        junkComponent = component;
-                        junkObject = node3D;
-                        break;
-                    }
+                    junkComponent = component;
+                    junkObject = child as Node3D;
+                    break;
                 }
             }
 
@@ -378,17 +351,13 @@ namespace hoardinggame.Core.Tests
             // Assert - The object should be recreated at the new position
             Junk updatedJunkComponent = null;
             Node3D updatedJunkObject = null;
-            foreach (Node child in room.GetChildren())
+            foreach (Node child in junkPlane.GetChildren())
             {
-                if (child is Node3D node3D)
+                if (child is Junk component && component.GameStateId == "position-test-junk")
                 {
-                    var component = node3D.GetNodeOrNull<Junk>(".");
-                    if (component != null && component.GameStateId == "position-test-junk")
-                    {
-                        updatedJunkComponent = component;
-                        updatedJunkObject = node3D;
-                        break;
-                    }
+                    updatedJunkComponent = component;
+                    updatedJunkObject = child as Node3D;
+                    break;
                 }
             }
 

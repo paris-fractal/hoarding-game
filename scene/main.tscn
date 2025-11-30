@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://dcpqg0x75wxd0"]
+[gd_scene load_steps=22 format=3 uid="uid://dcpqg0x75wxd0"]
 
 [ext_resource type="Texture2D" uid="uid://c82bi1l86ocig" path="res://objects/worn_wall/wall-1.png" id="1_k65ib"]
 [ext_resource type="Script" uid="uid://d0otlyqyti2k8" path="res://scripts/Orchestrator.cs" id="1_wscrc"]
@@ -13,6 +13,10 @@
 [ext_resource type="PackedScene" uid="uid://bmfsxflrm1kju" path="res://objects/fridge_2/asset_zD3mhxPSLLNtNCogCrZZMTAG.glb" id="9_0vlqb"]
 [ext_resource type="Script" uid="uid://dt43lqon7h7ae" path="res://scene/SanityMeter.cs" id="13_mswub"]
 [ext_resource type="Script" uid="uid://d0updcarmx71o" path="res://scripts/JunkSystem.cs" id="14_hybxs"]
+[ext_resource type="PackedScene" uid="uid://drhv2e1vh4mvk" path="res://objects/sink-counters/model.glb" id="14_v2gmf"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_v2gmf"]
+size = Vector3(0.51, 0.53, 2)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ykrsh"]
 albedo_texture = ExtResource("1_k65ib")
@@ -33,6 +37,9 @@ texture_filter = 0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_mswub"]
 size = Vector3(0.54, 0.99, 0.46)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hybxs"]
+size = Vector3(3.8, 1.86, 0.25)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xersf"]
 shader = ExtResource("7_smf0o")
@@ -56,6 +63,14 @@ transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75
 shadow_enabled = true
 
 [node name="room" type="Node3D" parent="."]
+
+[node name="sink-counters" parent="room" instance=ExtResource("14_v2gmf")]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 1.70717, 0.427863, -0.92878)
+
+[node name="RigidBody3D" type="StaticBody3D" parent="room/sink-counters"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="room/sink-counters/RigidBody3D"]
+shape = SubResource("BoxShape3D_v2gmf")
 
 [node name="south-wall" type="CSGBox3D" parent="room"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 2)
@@ -100,7 +115,7 @@ transform = Transform3D(-2.18557e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.18557e-08, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.476, 1.074, -1.607)
 visible = false
 
-[node name="fridge" type="RigidBody3D" parent="room"]
+[node name="fridge" type="StaticBody3D" parent="room"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.611, 0.509, -1.721)
 
 [node name="fridge_mesh" parent="room/fridge" instance=ExtResource("8_tv8i1")]
@@ -108,6 +123,12 @@ transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="room/fridge"]
 shape = SubResource("BoxShape3D_mswub")
+
+[node name="JunkPlane" type="Area3D" parent="room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.056, 0.994, -1.735)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="room/JunkPlane"]
+shape = SubResource("BoxShape3D_hybxs")
 
 [node name="Player" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

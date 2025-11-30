@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 
 namespace hoardinggame.Core
 {
@@ -75,14 +76,22 @@ namespace hoardinggame.Core
                     HandleRotatePlayer(state, rotatePlayer);
                     break;
                 case SpawnJunkInput spawnJunk:
-                    HandleSpawnJunk(state);
+                    HandleSpawnJunk(state, spawnJunk);
                     break;
             }
         }
 
-        private void HandleSpawnJunk(GameState state)
+        private void HandleSpawnJunk(GameState state, SpawnJunkInput input)
         {
-            state.JunkItems.Add(new JunkItem(Guid.NewGuid().ToString(), "junk_can", -.476f, 1.054f, -1.607f, 0, 0, 0));
+            state.JunkItems.Add(new JunkItem(
+                Guid.NewGuid().ToString(),
+                "junk_can",
+                input.PosX,
+                input.PosY,
+                input.PosZ,
+                0,
+                0,
+                0));
         }
 
         private void ProcessObservation(GameState state, GameObservation observation)

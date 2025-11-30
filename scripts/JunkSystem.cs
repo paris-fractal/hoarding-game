@@ -3,15 +3,21 @@ using hoardinggame.Core;
 using hoardinggame;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 public partial class JunkSystem : Node3D
 {
 	private Dictionary<string, Node3D> realizedJunkObjects = new();
+	private Node3D junkPlane;
 
 	public override void _Process(double dt)
 	{
 		var currentGameState = Orchestrator.GetCurrentState();
-		if (currentGameState == null) return;
+		if (currentGameState == null)
+		{
+			GD.Print("No current game state");
+			return;
+		}
 
 		ProcessJunkRealization(currentGameState);
 	}
@@ -40,18 +46,24 @@ public partial class JunkSystem : Node3D
 
 	private void CreateNewJunkObjects(GameState gameState)
 	{
+		junkPlane ??= GetNodeOrNull<Node3D>("/root/Root/room/JunkPlane");
 		foreach (var junk in gameState.JunkItems)
 		{
 			if (!realizedJunkObjects.ContainsKey(junk.Id))
 			{
-				GD.Print("CHILD: " + GetNode<Node>("/root/Root/room").GetChildren());
-
 				var junkObject = CreateJunkObject(junk);
 				if (junkObject != null)
 				{
 					var room = GetNode<Node3D>("/root/Root/room");
-					room.AddChild(junkObject);
+					var parent = junkPlane ?? room;
+					parent.AddChild(junkObject);
 					realizedJunkObjects[junk.Id] = junkObject;
+					junkObject.GlobalPosition = new Vector3(junk.PosX, junk.PosY, junk.PosZ);
+					GD.Print($"Added {junk.Id} to plane, now holding: {junkPlane.GetChildCount()}");
+				}
+				else
+				{
+					GD.Print($"Failed to create junk object for {junk.Id}");
 				}
 			}
 		}
@@ -73,15 +85,15 @@ public partial class JunkSystem : Node3D
 			return null;
 		}
 
-		var junkObject = scene.Instantiate<Node3D>();
+		var junkObject = scene.Instantiate() as Node3D;
 
 		// Set position and rotation
 		junkObject.Name = junk.type + "_" + junk.Id;
-		junkObject.Position = new Vector3(junk.PosX, junk.PosY, junk.PosZ);
-		junkObject.RotationDegrees = new Vector3(junk.RotX, junk.RotY, junk.RotZ);
+		junkObject.GlobalPosition = new Vector3(junk.PosX, junk.PosY, junk.PosZ);
+		junkObject.GlobalRotationDegrees = new Vector3(junk.RotX, junk.RotY, junk.RotZ);
 
 		// Set the GameState ID in the Junk component if it exists
-		var junkComponent = junkObject.GetNode<Junk>(".");
+		var junkComponent = junkObject as Junk;
 		if (junkComponent != null)
 		{
 			junkComponent.GameStateId = junk.Id;

@@ -42,5 +42,14 @@ namespace hoardinggame.Core
         public RotationDirection Direction { get; set; }
     }
 
-    public class SpawnJunkInput : GameInput { }
+    public class SpawnJunkInput : GameInput
+    {
+        public float PosX { get; set; }
+        public float PosY { get; set; }
+        public float PosZ { get; set; }
+
+        public float ImpulseX { get; set; }
+        public float ImpulseY { get; set; }
+        public float ImpulseZ { get; set; }
+    }
 }
